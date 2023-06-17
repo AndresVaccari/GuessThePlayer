@@ -44,7 +44,7 @@ export default function Home() {
       console.log(randomPlayer);
 
       const res = await fetch(
-        `https://api.beatleader.xyz/player/${randomPlayer.id}/scores?count=200`
+        `https://web-production-55ce.up.railway.app/https://api.beatleader.xyz/player/${randomPlayer.id}/scores?count=200`
       );
       const data = await res.json();
 
