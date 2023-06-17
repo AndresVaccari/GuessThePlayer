@@ -7,6 +7,7 @@ export default function MainPage({
   handleAddPlayer,
   handleRemovePlayer,
   loading,
+  errorId,
 }) {
   return (
     <div className={`${loading && "blur-sm"}`}>
@@ -28,6 +29,7 @@ export default function MainPage({
                 player={player}
                 index={index}
                 handleChange={handleChange}
+                errorId={errorId}
               />
               <button
                 onClick={() => handleRemovePlayer(index)}

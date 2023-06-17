@@ -11,6 +11,7 @@ export default function Home() {
   const [playerOrder, setPlayerOrder] = useState([]);
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [errorId, setErrorId] = useState(null);
 
   const handleAddPlayer = () => {
     setPlayers([...players, ""]);
@@ -33,23 +34,44 @@ export default function Home() {
     e.preventDefault();
 
     setLoading(true);
+    setErrorId(null);
 
     let SongList = [];
     let playersOrder = [];
+    let playersSongs = [];
 
     const quantity = e.target.quantity.value;
 
-    for (let i = 0; i < quantity; i++) {
-      const randomPlayer = players[Math.floor(Math.random() * players.length)];
-      console.log(randomPlayer);
+    //fetch all players songs an save in playerScores
+    for (const [index, player] of players.entries()) {
+      try {
+        const res = await fetch(
+          `https://web-production-55ce.up.railway.app/https://api.beatleader.xyz/player/${player.id}/scores?count=200`
+        );
+        const data = await res.json();
+        playersSongs.push({
+          id: player.id,
+          songs: data.data,
+        });
+      } catch (error) {
+        setErrorId(index);
+        setLoading(false);
+        return;
+      }
+    }
 
-      const res = await fetch(
-        `https://web-production-55ce.up.railway.app/https://api.beatleader.xyz/player/${randomPlayer.id}/scores?count=200`
-      );
-      const data = await res.json();
+    for (let i = 0; i < quantity; i++) {
+      const randomPlayer =
+        playersSongs[Math.floor(Math.random() * players.length)];
+
+      console.log("randomPlayer", randomPlayer);
 
       const randomSong =
-        data.data[Math.floor(Math.random() * data.data.length)];
+        randomPlayer.songs[
+          Math.floor(Math.random() * randomPlayer.songs.length)
+        ];
+
+      console.log(randomSong);
 
       SongList.push(randomSong);
       playersOrder.push(randomPlayer.id);
@@ -79,6 +101,7 @@ export default function Home() {
           handleSubmit={handleSubmit}
           players={players}
           loading={loading}
+          errorId={errorId}
         />
       ) : (
         <ReplayPage

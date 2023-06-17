@@ -1,7 +1,12 @@
 import { useCallback, useState, useRef } from "react";
 import { SearchList } from "./SearchList";
 
-export default function PlayerSelector({ index, handleChange, player }) {
+export default function PlayerSelector({
+  index,
+  handleChange,
+  player,
+  errorId,
+}) {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [results, setResults] = useState([]);
   const inputRef = useRef(null);
@@ -38,7 +43,9 @@ export default function PlayerSelector({ index, handleChange, player }) {
         type="text"
         name="name"
         id="name"
-        className="text-black border-2 border-black rounded-md p-2"
+        className={`text-black border-2 rounded-md p-2 ${
+          errorId == index && "border-red-500"
+        }`}
         placeholder="Search for a player..."
         title="Search for a player..."
         required
