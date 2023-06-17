@@ -10,6 +10,7 @@ export default function ReplayPage({
   const [reveal, setReveal] = useState(false);
   const [index, setIndex] = useState(0);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [score, setScore] = useState(0);
 
   const handleNextSong = () => {
     setIndex(index + 1);
@@ -19,13 +20,22 @@ export default function ReplayPage({
   const handleReveal = (player) => {
     setReveal(true);
     setSelectedPlayer(player);
+    if (playerOrder[index] === player.id) {
+      setScore(score + 1);
+    }
   };
 
   return (
     <>
       <div className="flex flex-col w-full h-ful items-center">
-        <div className="flex flex-col gap-2 absolute h-1/4">
-          <div className="flex flex-row w-full items-center justify-center gap-4 h-3/4">
+        <div className="flex flex-col absolute h-1/4">
+          <div className="flex flex-row w-full items-center justify-center gap-4">
+            <p className="text-2xl text-white">Score: {score}</p>
+            <p className="text-2xl text-white">
+              {index + 1}/{songs.length}
+            </p>
+          </div>
+          <div className="flex flex-row w-full items-center justify-center mb-2 gap-4 h-3/4">
             {players.map((player) => (
               <div
                 key={player.id}
