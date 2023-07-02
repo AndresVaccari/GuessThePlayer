@@ -3,6 +3,7 @@ import MainPage from "@/components/MainPage";
 import ReplayPage from "@/components/ReplayPage";
 import LoadingComponent from "@/components/LoadingComponent";
 import Head from "next/head";
+import EndlessReplayPage from "@/components/EndlessReplayPage";
 
 export default function Home() {
   const [players, setPlayers] = useState([""]);
@@ -10,8 +11,10 @@ export default function Home() {
   const [playing, setPlaying] = useState(false);
   const [playerOrder, setPlayerOrder] = useState([]);
   const [songs, setSongs] = useState([]);
+  const [endlessSongs, setEndlessSongs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorId, setErrorId] = useState(null);
+  const [endless, setEndless] = useState(false);
 
   const handleAddPlayer = () => {
     setPlayers([...players, ""]);
@@ -30,19 +33,9 @@ export default function Home() {
     setPlayers(newPlayers);
   };
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    setLoading(true);
-    setErrorId(null);
-
-    let SongList = [];
-    let playersOrder = [];
+  async function fetchPlayersSongs() {
     let playersSongs = [];
 
-    const quantity = e.target.quantity.value;
-
-    //fetch all players songs an save in playerScores
     for (const [index, player] of players.entries()) {
       try {
         const res = await fetch(
@@ -51,6 +44,8 @@ export default function Home() {
         const data = await res.json();
         playersSongs.push({
           id: player.id,
+          avatar: player.avatar,
+          name: player.name,
           songs: data.data,
         });
       } catch (error) {
@@ -60,11 +55,24 @@ export default function Home() {
       }
     }
 
+    return playersSongs;
+  }
+
+  async function normalMode(e) {
+    setLoading(true);
+    setErrorId(null);
+
+    let SongList = [];
+    let playersOrder = [];
+    let playersSongs = await fetchPlayersSongs();
+
+    const quantity = e.target.quantity.value;
+
+    //fetch all players songs an save in playerScores
+
     for (let i = 0; i < quantity; i++) {
       const randomPlayer =
         playersSongs[Math.floor(Math.random() * players.length)];
-
-      console.log("randomPlayer", randomPlayer);
 
       const randomSong =
         randomPlayer.songs[
@@ -82,6 +90,20 @@ export default function Home() {
 
     setPlaying(true);
     setLoading(false);
+  }
+
+  async function endlessMode() {
+    setEndlessSongs([]);
+    setLoading(true);
+    const playersSongs = await fetchPlayersSongs();
+    setEndlessSongs(playersSongs);
+    setPlaying(true);
+    setLoading(false);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    endless ? endlessMode() : normalMode(e);
   }
 
   return (
@@ -102,6 +124,14 @@ export default function Home() {
           players={players}
           loading={loading}
           errorId={errorId}
+          endless={endless}
+          setEndless={setEndless}
+        />
+      ) : endless ? (
+        <EndlessReplayPage
+          songs={endlessSongs}
+          setPlaying={setPlaying}
+          setEndless={setEndless}
         />
       ) : (
         <ReplayPage

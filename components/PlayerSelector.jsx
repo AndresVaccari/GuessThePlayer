@@ -41,7 +41,6 @@ export default function PlayerSelector({
     <div>
       <input
         type="text"
-        name="name"
         id="name"
         className={`text-black border-2 rounded-md p-2 ${
           errorId == index && "border-red-500"

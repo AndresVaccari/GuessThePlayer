@@ -1,30 +1,56 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export default function ReplayPage({
-  songs,
-  playerOrder,
-  players,
-  setPlaying,
-}) {
+export default function EndlessReplayPage({ songs, setPlaying, setEndless }) {
+  const [lives, setLives] = useState(3);
   const [reveal, setReveal] = useState(false);
-  const [index, setIndex] = useState(0);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [score, setScore] = useState(0);
+  const [playedSongs, setPlayedSongs] = useState([]);
+  const [correctPlayer, setCorrectPlayer] = useState(null);
+  const [playingSong, setPlayingSong] = useState(null);
 
-  const handleNextSong = () => {
-    setIndex(index + 1);
-    setReveal(false);
-  };
+  useEffect(() => {
+    if (playedSongs.length === 0) {
+      const player = songs[Math.floor(Math.random() * songs.length)];
+      console.log("player", player);
+      setCorrectPlayer(player);
+      console.log(
+        "song",
+        player.songs[Math.floor(Math.random() * player.songs.length)]
+      );
+      setPlayingSong(
+        player.songs[Math.floor(Math.random() * player.songs.length)]
+      );
+    }
+  }, [songs, playedSongs]);
 
   const handleReveal = (player) => {
     if (reveal) return;
     setReveal(true);
     setSelectedPlayer(player);
-    if (playerOrder[index] === player.id) {
+    if (player.id === correctPlayer.id) {
       setScore(score + 1);
+      setPlayedSongs([...playedSongs, playingSong]);
+    } else {
+      setLives(lives - 1);
+      setPlayedSongs([...playedSongs, playingSong]);
     }
   };
+
+  const handleNextSong = () => {
+    setReveal(false);
+    const player = songs[Math.floor(Math.random() * songs.length)];
+    setCorrectPlayer(player);
+    // Repeat song if it has already been played
+    let song = player.songs[Math.floor(Math.random() * player.songs.length)];
+    while (playedSongs.includes(song)) {
+      song = player.songs[Math.floor(Math.random() * player.songs.length)];
+    }
+    setPlayingSong(song);
+  };
+
+  if (!correctPlayer) return null;
 
   return (
     <>
@@ -32,22 +58,20 @@ export default function ReplayPage({
         <div className="flex flex-col absolute h-1/4">
           <div className="flex flex-row w-full items-center justify-center gap-4">
             <p className="text-2xl text-white">Score: {score}</p>
-            <p className="text-2xl text-white">
-              {index + 1}/{songs.length}
-            </p>
+            <p className="text-2xl text-white">Lives: {lives}</p>
           </div>
           <div className="flex flex-row w-full items-center justify-center mb-2 gap-4 h-3/4">
-            {players.map((player) => (
+            {songs.map((player) => (
               <div
                 key={player.id}
                 className={`rounded-full cursor-pointer ${
-                  reveal & (playerOrder[index] === player.id) &&
+                  reveal & (correctPlayer.id === player.id) &&
                   "border-2 border-green-500"
                 }
                 ${
                   reveal &
                     (player === selectedPlayer &&
-                      selectedPlayer.id != playerOrder[index]) &&
+                      selectedPlayer.id != correctPlayer.id) &&
                   "border-2 border-red-500"
                 }
                 `}
@@ -65,7 +89,7 @@ export default function ReplayPage({
           </div>
           <div className="w-full flex items-center justify-center">
             {reveal &&
-              (index < songs.length - 1 ? (
+              (lives > 0 ? (
                 <button
                   onClick={handleNextSong}
                   className="bg-black text-white border-2 border-white rounded-md p-2"
@@ -74,7 +98,10 @@ export default function ReplayPage({
                 </button>
               ) : (
                 <button
-                  onClick={() => setPlaying(false)}
+                  onClick={() => {
+                    setEndless(false);
+                    setPlaying(false);
+                  }}
                   className="bg-black text-white border-2 border-white rounded-md p-2"
                 >
                   Go Back
@@ -84,7 +111,7 @@ export default function ReplayPage({
         </div>
       </div>
       <iframe
-        src={`https://replay.beatleader.xyz/?scoreId=${songs[index].id}`}
+        src={`https://replay.beatleader.xyz/?scoreId=${playingSong.id}`}
         referrerPolicy="no-referrer"
         className="w-full h-full opacity-100"
       />
