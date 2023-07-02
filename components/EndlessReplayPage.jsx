@@ -121,11 +121,13 @@ export default function EndlessReplayPage({ songs, setPlaying, setEndless }) {
         className="w-full h-full opacity-100"
       />
       <div
-        className={`w-1/3 h-1/4 absolute bottom-0 left-0 ${
+        className={`flex justify-center items-center w-1/4 h-1/4 absolute bottom-0 left-0 bg-white rounded-full blur-sm ${
           reveal ? "hidden" : ""
         }`}
       >
-        <Image src="/cover.png" alt="cover" fill />
+        <p className="text-8xl text-black font-bold mb-5 cursor-default">
+          ? ? ? ?
+        </p>
       </div>
     </>
   );
