@@ -54,7 +54,7 @@ export default function MainPage({
             }`}
             defaultValue={1}
             min={1}
-            max={20}
+            max={50}
             required
             disabled={endless}
           />

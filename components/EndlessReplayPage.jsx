@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { AiFillHeart } from "react-icons/ai";
 
 export default function EndlessReplayPage({ songs, setPlaying, setEndless }) {
   const [lives, setLives] = useState(3);
@@ -58,7 +59,11 @@ export default function EndlessReplayPage({ songs, setPlaying, setEndless }) {
         <div className="flex flex-col absolute h-1/4">
           <div className="flex flex-row w-full items-center justify-center gap-4">
             <p className="text-2xl text-white">Score: {score}</p>
-            <p className="text-2xl text-white">Lives: {lives}</p>
+            <p className="flex gap-1 items-center justify-center mt-1">
+              {[...Array(lives)].map((e, i) => (
+                <AiFillHeart key={i} className="text-red-500" size={25} />
+              ))}
+            </p>
           </div>
           <div className="flex flex-row w-full items-center justify-center mb-2 gap-4 h-3/4">
             {songs.map((player) => (
