@@ -2,8 +2,13 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { AiFillHeart } from "react-icons/ai";
 
-export default function EndlessReplayPage({ songs, setPlaying, setEndless }) {
-  const [lives, setLives] = useState(3);
+export default function EndlessReplayPage({
+  songs,
+  setPlaying,
+  setEndless,
+  lives,
+  setLives,
+}) {
   const [reveal, setReveal] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [score, setScore] = useState(0);

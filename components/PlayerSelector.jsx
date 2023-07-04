@@ -38,11 +38,11 @@ export default function PlayerSelector({
   };
 
   return (
-    <div>
+    <div className="grow">
       <input
         type="text"
         id="name"
-        className={`text-black border-2 rounded-md p-2 ${
+        className={`text-black w-full border-2 rounded-md p-2 ${
           errorId == index && "border-red-500"
         }`}
         placeholder="Search for a player..."

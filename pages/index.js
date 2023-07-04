@@ -15,6 +15,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [errorId, setErrorId] = useState(null);
   const [endless, setEndless] = useState(false);
+  const [scores, setScores] = useState(200);
+  const [lives, setLives] = useState(3);
 
   const handleAddPlayer = () => {
     setPlayers([...players, ""]);
@@ -39,7 +41,7 @@ export default function Home() {
     for (const [index, player] of players.entries()) {
       try {
         const res = await fetch(
-          `https://web-production-55ce.up.railway.app/https://api.beatleader.xyz/player/${player.id}/scores?count=200`
+          `https://web-production-55ce.up.railway.app/https://api.beatleader.xyz/player/${player.id}/scores?count=${scores}`
         );
         const data = await res.json();
         playersSongs.push({
@@ -124,7 +126,11 @@ export default function Home() {
           players={players}
           loading={loading}
           errorId={errorId}
+          scores={scores}
+          setScores={setScores}
           endless={endless}
+          lives={lives}
+          setLives={setLives}
           setEndless={setEndless}
         />
       ) : endless ? (
@@ -132,6 +138,8 @@ export default function Home() {
           songs={endlessSongs}
           setPlaying={setPlaying}
           setEndless={setEndless}
+          lives={lives}
+          setLives={setLives}
         />
       ) : (
         <ReplayPage
