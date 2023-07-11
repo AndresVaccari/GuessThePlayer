@@ -109,6 +109,7 @@ export default function EndlessReplayPage({
               ) : (
                 <button
                   onClick={() => {
+                    setLives(3);
                     setEndless(false);
                     setPlaying(false);
                   }}
@@ -126,7 +127,7 @@ export default function EndlessReplayPage({
         className="w-full h-full opacity-100"
       />
       <div
-        className={`flex justify-center items-center w-1/4 h-1/4 absolute bottom-0 left-0 bg-white rounded-full blur-sm ${
+        className={`flex justify-center items-center w-1/4 h-1/4 absolute bottom-0 left-0 bg-white rounded-full ${
           reveal ? "hidden" : ""
         }`}
       >

@@ -41,13 +41,15 @@ export default function PlayerSelector({
     <div className="grow">
       <input
         type="text"
-        id="name"
+        id="beatleader-player"
+        name="beatleader-player"
         className={`text-black w-full border-2 rounded-md p-2 ${
           errorId == index && "border-red-500"
         }`}
         placeholder="Search for a player..."
         title="Search for a player..."
         required
+        autoComplete="false"
         defaultValue={player?.name || ""}
         onChange={search}
         onClick={(e) => {
