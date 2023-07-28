@@ -12,7 +12,7 @@ export default function PlayerSelector({
   const inputRef = useRef(null);
 
   const searchEndpoint = (query) =>
-    `https://web-production-55ce.up.railway.app/https://api.beatleader.xyz/players?sortBy=pp&page=1&count=50&search=${query}&mapsType=ranked&ppType=general&friends=false`;
+    `https://thingproxy.freeboard.io/fetch/https://api.beatleader.xyz/players?sortBy=pp&page=1&count=50&search=${query}&mapsType=ranked&ppType=general&friends=false`;
 
   const search = useCallback(async (event) => {
     setResults([]);
@@ -49,7 +49,7 @@ export default function PlayerSelector({
         placeholder="Search for a player..."
         title="Search for a player..."
         required
-        autoComplete="false"
+        autoComplete="off"
         defaultValue={player?.name || ""}
         onChange={search}
         onClick={(e) => {
