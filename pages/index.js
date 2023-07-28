@@ -41,7 +41,7 @@ export default function Home() {
     for (const [index, player] of players.entries()) {
       try {
         const res = await fetch(
-          `https://thingproxy.freeboard.io/fetch/https://api.beatleader.xyz/player/${player.id}/scores?count=${scores}`
+          `https://web-production-55ce.up.railway.app/https://api.beatleader.xyz/player/${player.id}/scores?count=${scores}`
         );
         const data = await res.json();
         playersSongs.push({
