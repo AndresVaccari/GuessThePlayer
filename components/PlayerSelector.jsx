@@ -12,7 +12,7 @@ export default function PlayerSelector({
   const inputRef = useRef(null);
 
   const searchEndpoint = (query) =>
-    `https://web-production-55ce.up.railway.app/https://api.beatleader.xyz/players?sortBy=pp&page=1&count=50&search=${query}&mapsType=ranked&ppType=general&friends=false`;
+    `https://cors-anywhere-andresvaccari.onrender.com/https://api.beatleader.xyz/players?sortBy=pp&page=1&count=50&search=${query}&mapsType=ranked&ppType=general&friends=false`;
 
   const search = useCallback(async (event) => {
     setResults([]);
