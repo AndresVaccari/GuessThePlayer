@@ -17,6 +17,10 @@ export default function MainPage({
   setScores,
   lives,
   setLives,
+  randomTimeMode,
+  setRandomTimeMode,
+  hardMode,
+  setHardMode,
 }) {
   const [proMode, setProMode] = useState(false);
 
@@ -134,6 +138,40 @@ export default function MainPage({
               onChange={(e) => setLives(e.target.value)}
             />
             <Tooltip title="Quantity of lives on endless mode. If endless mode is not selected, this value will be ignored. Default value is 3.">
+              <button type="button">
+                <BsFillQuestionCircleFill size={25} />
+              </button>
+            </Tooltip>
+          </div>
+          <p className="text-xl w-full text-center">Random time mode?</p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setRandomTimeMode(!randomTimeMode)}
+              type="button"
+              className={`bg-black text-white border-2 w-full border-white rounded-md p-2 ${
+                randomTimeMode ? "bg-green-900" : ""
+              }`}
+            >
+              {randomTimeMode ? "On" : "Off"}
+            </button>
+            <Tooltip title="If this is on, the time to guess the song will be random. Default value is off. For now, this is only available on endless mode. This sometimes can be buggy.">
+              <button type="button">
+                <BsFillQuestionCircleFill size={25} />
+              </button>
+            </Tooltip>
+          </div>
+          <p className="text-xl w-full text-center">Hard mode?</p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setHardMode(!hardMode)}
+              type="button"
+              className={`bg-black text-white border-2 w-full border-white rounded-md p-2 ${
+                hardMode ? "bg-green-900" : ""
+              }`}
+            >
+              {hardMode ? "On" : "Off"}
+            </button>
+            <Tooltip title="If this is on, the game will be harder hiding the song name and the artist name. Default value is off.">
               <button type="button">
                 <BsFillQuestionCircleFill size={25} />
               </button>
