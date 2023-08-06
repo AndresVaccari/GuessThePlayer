@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillHeart } from "react-icons/ai";
 
 export default function EndlessReplayPage({
@@ -26,7 +26,7 @@ export default function EndlessReplayPage({
   };
 
   useEffect(() => {
-    if (props.playedSongs.length === 0) {
+    if (props.playingSong === null) {
       const player = songs[Math.floor(Math.random() * songs.length)];
       const song =
         player.songs[Math.floor(Math.random() * player.songs.length)];
@@ -50,11 +50,12 @@ export default function EndlessReplayPage({
       reveal: true,
       selectedPlayer: player,
       score:
-        player.id === props.correctPlayer.id
-          ? props.score + 1
-          : props.score - 1,
+        player.id === props.correctPlayer.id ? props.score + 1 : props.score,
       playedSongs: [...props.playedSongs, props.playingSong],
     });
+    if (player.id != props.correctPlayer.id) {
+      setLives(lives - 1);
+    }
   };
 
   const handleNextSong = () => {
