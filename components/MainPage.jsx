@@ -21,6 +21,8 @@ export default function MainPage({
   setRandomTimeMode,
   hardMode,
   setHardMode,
+  arcViewer,
+  setArcViewer,
 }) {
   const [proMode, setProMode] = useState(false);
 
@@ -33,7 +35,27 @@ export default function MainPage({
         onSubmit={(e) => handleSubmit(e)}
         className="flex justify-center gap-3 w-screen"
       >
-        <div className={`flex flex-col w-1/5 ${proMode ? "" : "hidden"}`} />
+        <div
+          className={`flex flex-col gap-2 w-1/5 ${
+            proMode ? "" : "hidden"
+          } items-center`}
+        >
+          <p className="text-xl w-full text-center">Player</p>
+          <div className="flex w-full items-center gap-2">
+            <button
+              onClick={() => setArcViewer(!arcViewer)}
+              type="button"
+              className={`bg-black text-white border-2 w-full border-white rounded-md p-2`}
+            >
+              {arcViewer ? "ArcViewer" : "BeatLeader"}
+            </button>
+            <Tooltip title="Use the new ArcViewer Player or the old BeatLeader Player. Default value is ArcViewer.">
+              <button type="button">
+                <BsFillQuestionCircleFill size={25} />
+              </button>
+            </Tooltip>
+          </div>
+        </div>
         <div className="flex gap-2 flex-col w-1/5">
           <button
             onClick={handleAddPlayer}
@@ -148,13 +170,14 @@ export default function MainPage({
             <button
               onClick={() => setRandomTimeMode(!randomTimeMode)}
               type="button"
+              disabled={arcViewer}
               className={`bg-black text-white border-2 w-full border-white rounded-md p-2 ${
                 randomTimeMode ? "bg-green-900" : ""
-              }`}
+              } ${arcViewer && "opacity-50"}`}
             >
               {randomTimeMode ? "On" : "Off"}
             </button>
-            <Tooltip title="If this is on, the time to guess the song will be random. Default value is off. For now, this is only available on endless mode. This sometimes can be buggy.">
+            <Tooltip title="If this is on, the time to guess the song will be random. Default value is off. For now, this is only available on endless mode. This sometimes can be buggy. Not working on ArcViewer.">
               <button type="button">
                 <BsFillQuestionCircleFill size={25} />
               </button>

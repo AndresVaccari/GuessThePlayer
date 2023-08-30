@@ -19,6 +19,7 @@ export default function Home() {
     songs: [],
     endlessSongs: [],
     hardMode: false,
+    arcViewer: true,
   });
 
   const updateMainProps = (newProps) => {
@@ -143,6 +144,8 @@ export default function Home() {
           }
           hardMode={mainProps.hardMode}
           setHardMode={(hardMode) => updateMainProps({ hardMode })}
+          arcViewer={mainProps.arcViewer}
+          setArcViewer={(arcViewer) => updateMainProps({ arcViewer })}
         />
       ) : mainProps.endless ? (
         <EndlessReplayPage
@@ -153,6 +156,7 @@ export default function Home() {
           setLives={(lives) => updateMainProps({ lives })}
           randomTimeMode={mainProps.randomTimeMode}
           hardMode={mainProps.hardMode}
+          arcViewer={mainProps.arcViewer}
         />
       ) : (
         <ReplayPage
