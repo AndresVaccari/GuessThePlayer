@@ -12,7 +12,6 @@ export default function Home() {
     errorId: null,
     scores: 200,
     endless: false,
-    lives: 3,
     randomTimeMode: false,
     playing: false,
     playerOrder: [],
@@ -21,6 +20,8 @@ export default function Home() {
     hardMode: false,
     arcViewer: true,
   });
+
+  const [lives, setLives] = useState(3);
 
   const updateMainProps = (newProps) => {
     setMainProps({ ...mainProps, ...newProps });
@@ -135,8 +136,8 @@ export default function Home() {
           scores={mainProps.scores}
           setScores={(scores) => updateMainProps({ scores })}
           endless={mainProps.endless}
-          lives={mainProps.lives}
-          setLives={(lives) => updateMainProps({ lives })}
+          lives={lives}
+          setLives={setLives}
           setEndless={(endless) => updateMainProps({ endless })}
           randomTimeMode={mainProps.randomTimeMode}
           setRandomTimeMode={(randomTimeMode) =>
@@ -152,8 +153,8 @@ export default function Home() {
           songs={mainProps.endlessSongs}
           setPlaying={(playing) => updateMainProps({ playing })}
           setEndless={(endless) => updateMainProps({ endless })}
-          lives={mainProps.lives}
-          setLives={(lives) => updateMainProps({ lives })}
+          lives={lives}
+          setLives={setLives}
           randomTimeMode={mainProps.randomTimeMode}
           hardMode={mainProps.hardMode}
           arcViewer={mainProps.arcViewer}

@@ -64,7 +64,6 @@ export default function ArcViewer({
                 <button
                   onClick={() => {
                     setLives(3);
-                    setEndless(false);
                     setPlaying(false);
                   }}
                   className="bg-black text-white border-2 border-white rounded-md p-2"
