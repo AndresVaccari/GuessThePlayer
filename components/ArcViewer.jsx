@@ -24,7 +24,7 @@ export default function ArcViewer({
               ))}
             </p>
           </div>
-          <div className="flex flex-row w-full items-center justify-center mb-2 gap-4 h-3/4">
+          <div className="flex flex-row w-full items-center justify-center mb-2 gap-4 h-3/4 z-50">
             {songs.map((player) => (
               <div
                 key={player.id}
@@ -46,7 +46,7 @@ export default function ArcViewer({
                   alt="avatar"
                   height={128}
                   width={128}
-                  className="rounded-full"
+                  className="rounded-full border-black border-2"
                 />
               </div>
             ))}
