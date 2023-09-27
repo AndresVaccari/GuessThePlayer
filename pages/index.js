@@ -4,13 +4,14 @@ import ReplayPage from "@/components/ReplayPage";
 import LoadingComponent from "@/components/LoadingComponent";
 import Head from "next/head";
 import EndlessReplayPage from "@/components/EndlessReplayPage";
+import axios from "axios";
 
 export default function Home() {
   const [mainProps, setMainProps] = useState({
     players: [""],
     loading: false,
     errorId: null,
-    scores: 200,
+    scores: 100,
     endless: false,
     randomTimeMode: false,
     playing: false,
@@ -49,22 +50,26 @@ export default function Home() {
 
     for (const [index, player] of mainProps.players.entries()) {
       try {
-        const res = await fetch(
+        const headers = {
+          "x-requested-with": "XMLHttpRequest",
+          "ngrok-skip-browser-warning": "true",
+        };
+
+        const res = await axios.get(
           `https://d803-186-13-96-199.ngrok-free.app/https://api.beatleader.xyz/player/${player.id}/scores?count=${mainProps.scores}`,
-          {
-            headers: {
-              origin: "aplication/json",
-            },
-          }
+          { headers }
         );
-        const data = await res.json();
+
+        const data = await res.data.data;
+
         playersSongs.push({
           id: player.id,
           avatar: player.avatar,
           name: player.name,
-          songs: data.data,
+          songs: data,
         });
       } catch (error) {
+        console.log(error);
         setErrorId(index);
         setLoading(false);
         return;

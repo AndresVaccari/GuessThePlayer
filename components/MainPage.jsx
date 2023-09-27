@@ -133,12 +133,12 @@ export default function MainPage({
               name="scores"
               className="bg-black text-white border-2 border-white w-full rounded-md p-2"
               defaultValue={scores}
-              min={50}
-              max={1000}
+              min={26}
+              max={100}
               required
               onChange={(e) => setScores(e.target.value)}
             />
-            <Tooltip title="This will be the number of scores fetched from the API for each player starting from the most recent one. With bigger numbers, the game will be more difficult but the loading time will be longer. Default value is 200.">
+            <Tooltip title="This will be the number of scores fetched from the API for each player starting from the most recent one. With bigger numbers, the game will be more difficult but the loading time will be longer. Default value is 100.">
               <button type="button">
                 <BsFillQuestionCircleFill size={25} />
               </button>
