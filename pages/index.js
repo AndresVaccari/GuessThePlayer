@@ -50,7 +50,12 @@ export default function Home() {
     for (const [index, player] of mainProps.players.entries()) {
       try {
         const res = await fetch(
-          `https://cors-anywhere-andresvaccari.onrender.com/https://api.beatleader.xyz/player/${player.id}/scores?count=${mainProps.scores}`
+          `https://d803-186-13-96-199.ngrok-free.app/https://api.beatleader.xyz/player/${player.id}/scores?count=${mainProps.scores}`,
+          {
+            headers: {
+              origin: "aplication/json",
+            },
+          }
         );
         const data = await res.json();
         playersSongs.push({
