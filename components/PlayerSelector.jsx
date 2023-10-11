@@ -1,6 +1,7 @@
 import { AiFillAlert } from "react-icons/ai";
 import axios from "axios";
 import AsyncSelect from "react-select/async";
+import { PROXY } from "@/pages/api/hello";
 
 export default function PlayerSelector({ index, handleChange, errorId }) {
   const search = async (inputValue) => {
@@ -10,7 +11,7 @@ export default function PlayerSelector({ index, handleChange, errorId }) {
     };
 
     const res = await axios.get(
-      `https://d803-186-13-96-199.ngrok-free.app/https://api.beatleader.xyz/players?sortBy=pp&page=1&count=50&search=${inputValue}&mapsType=ranked&ppType=general&friends=false`,
+      `${PROXY}/https://api.beatleader.xyz/players?sortBy=pp&page=1&count=50&search=${inputValue}&mapsType=ranked&ppType=general&friends=false`,
       { headers }
     );
 

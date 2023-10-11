@@ -5,6 +5,7 @@ import LoadingComponent from "@/components/LoadingComponent";
 import Head from "next/head";
 import EndlessReplayPage from "@/components/EndlessReplayPage";
 import axios from "axios";
+import { PROXY } from "./api/hello";
 
 export default function Home() {
   const [mainProps, setMainProps] = useState({
@@ -56,7 +57,7 @@ export default function Home() {
         };
 
         const res = await axios.get(
-          `https://d803-186-13-96-199.ngrok-free.app/https://api.beatleader.xyz/player/${player.id}/scores?count=${mainProps.scores}`,
+          `${PROXY}/https://api.beatleader.xyz/player/${player.id}/scores?count=${mainProps.scores}`,
           { headers }
         );
 
