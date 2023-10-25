@@ -4,4 +4,4 @@ export default function handler(req, res) {
   res.status(200).json({ name: "John Doe" });
 }
 
-export const PROXY = "https://3de0-186-13-96-151.ngrok-free.app";
+export const PROXY = "https://63e7-186-13-96-151.ngrok-free.app";
