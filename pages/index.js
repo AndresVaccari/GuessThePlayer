@@ -51,17 +51,11 @@ export default function Home() {
 
     for (const [index, player] of mainProps.players.entries()) {
       try {
-        const headers = {
-          "x-requested-with": "XMLHttpRequest",
-          "ngrok-skip-browser-warning": "true",
-        };
-
         const res = await axios.get(
-          `https://api.beatleader.xyz/player/${player.id}/scores?count=${mainProps.scores}`,
-          { headers }
+          `/api/player-scores?id=${player.id}&count=${mainProps.scores}`
         );
 
-        const data = await res.data.data;
+        const data = res.data.data;
 
         playersSongs.push({
           id: player.id,
