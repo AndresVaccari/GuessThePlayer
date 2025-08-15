@@ -57,7 +57,7 @@ export default function Home() {
         };
 
         const res = await axios.get(
-          `${PROXY}/https://api.beatleader.xyz/player/${player.id}/scores?count=${mainProps.scores}`,
+          `https://api.beatleader.xyz/player/${player.id}/scores?count=${mainProps.scores}`,
           { headers }
         );
 

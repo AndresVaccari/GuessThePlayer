@@ -11,7 +11,7 @@ export default function PlayerSelector({ index, handleChange, errorId }) {
     };
 
     const res = await axios.get(
-      `${PROXY}/https://api.beatleader.xyz/players?sortBy=pp&page=1&count=50&search=${inputValue}&mapsType=ranked&ppType=general&friends=false`,
+      `https://api.beatleader.xyz/players?sortBy=pp&page=1&count=50&search=${inputValue}&mapsType=ranked&ppType=general&friends=false`,
       { headers }
     );
 
