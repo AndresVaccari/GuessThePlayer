@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
-  const { id, count } = req.query;
+  const { id, count, page } = req.query;
 
   try {
     const headers = {
@@ -11,7 +11,9 @@ export default async function handler(req, res) {
     };
 
     const response = await axios.get(
-      `https://api.beatleader.xyz/player/${id}/scores?count=${count}`,
+      `https://api.beatleader.xyz/player/${id}/scores?count=${count}&sortBy=date&page=${
+        page || 1
+      }`,
       { headers }
     );
 

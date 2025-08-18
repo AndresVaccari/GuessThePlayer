@@ -1,9 +1,16 @@
 import axios from "axios";
 import AsyncSelect from "react-select/async";
+import { useMemo } from "react";
+import { fetchWithRetry } from "@/utils/net";
 
-export default function PlayerSelector({ index, handleChange, errorId }) {
+export default function PlayerSelector({
+  player,
+  index,
+  handleChange,
+  errorId,
+}) {
+  // Carga remota de opciones
   const search = async (inputValue) => {
-    // Llamamos a nuestra API Route (misma origin => sin CORS)
     const res = await axios.get(`/api/bl/players`, {
       params: {
         sortBy: "pp",
@@ -18,22 +25,42 @@ export default function PlayerSelector({ index, handleChange, errorId }) {
 
     const data = res.data?.data ?? [];
     return data.map((item) => ({
-      label: `${item.name} - ${item.country}`,
-      value: item,
+      label: `${item.name}${item.country ? ` - ${item.country}` : ""}`,
+      value: {
+        id: item.id,
+        name: item.name,
+        avatar: item.avatar,
+        country: item.country,
+      },
     }));
   };
+
+  // Opción seleccionada desde el estado persistido (string u objeto)
+  const selectedOption = useMemo(() => {
+    if (!player) return null;
+    if (typeof player === "string") {
+      // si por algún motivo quedó un string, no marcamos selección
+      return null;
+    }
+    return {
+      label: `${player.name}${player.country ? ` - ${player.country}` : ""}`,
+      value: player,
+    };
+  }, [player]);
 
   return (
     <div className="grow">
       <AsyncSelect
         loadOptions={search}
-        onChange={(result) => handleChange(index, result.value)}
+        value={selectedOption} // ← CONTROLADO
+        onChange={(opt) => handleChange(index, opt?.value ?? "")}
         placeholder="Search for a player..."
         noOptionsMessage={() => "No players found"}
+        cacheOptions
         defaultOptions={false}
-        required
+        isClearable
         className={`text-black w-full rounded-md ${
-          errorId == index && "border-red-500"
+          errorId == index ? "border-red-500" : ""
         }`}
       />
     </div>

@@ -1,14 +1,40 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Head from "next/head";
+
 import MainPage from "@/components/MainPage";
 import ReplayPage from "@/components/ReplayPage";
 import LoadingComponent from "@/components/LoadingComponent";
-import Head from "next/head";
 import EndlessReplayPage from "@/components/EndlessReplayPage";
-import axios from "axios";
-import { PROXY } from "./api/hello";
+import { fetchWithRetry, limitConcurrency } from "@/utils/net";
+
+// ---- Persistencia simple en localStorage ----
+const PERSIST_KEY = "gtp:prefs:v1";
+
+function loadPrefs() {
+  try {
+    if (typeof window === "undefined") return null;
+    const raw = localStorage.getItem(PERSIST_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    console.warn("loadPrefs error", e);
+    return null;
+  }
+}
+
+function savePrefs(data) {
+  try {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(PERSIST_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn("savePrefs error", e);
+  }
+}
+// --------------------------------------------
 
 export default function Home() {
   const [mainProps, setMainProps] = useState({
+    // players puede ser array de strings o de objetos { id, name, avatar }
     players: [""],
     loading: false,
     errorId: null,
@@ -25,10 +51,59 @@ export default function Home() {
 
   const [lives, setLives] = useState(3);
 
+  // Para evitar guardar durante la primera hidratación
+  const didHydrate = useRef(false);
+
+  // Al montar: cargar prefs guardadas y mergear
+  useEffect(() => {
+    const saved = loadPrefs();
+    if (saved) {
+      setMainProps((prev) => ({
+        ...prev,
+        players: saved.players ?? prev.players,
+        scores: saved.scores ?? prev.scores,
+        endless: saved.endless ?? prev.endless,
+        randomTimeMode: saved.randomTimeMode ?? prev.randomTimeMode,
+        hardMode: saved.hardMode ?? prev.hardMode,
+        arcViewer: saved.arcViewer ?? prev.arcViewer,
+      }));
+      if (typeof saved.lives === "number") setLives(saved.lives);
+    }
+    didHydrate.current = true;
+  }, []);
+
+  // Helper para actualizar estado y persistir automáticamente
   const updateMainProps = (newProps) => {
-    setMainProps({ ...mainProps, ...newProps });
+    setMainProps((prev) => {
+      const next = { ...prev, ...newProps };
+      if (didHydrate.current) {
+        const persistedSubset = {
+          players: next.players?.map((p) => {
+            if (typeof p === "string") return p;
+            return { id: p?.id, name: p?.name, avatar: p?.avatar };
+          }),
+          scores: next.scores,
+          endless: next.endless,
+          randomTimeMode: next.randomTimeMode,
+          hardMode: next.hardMode,
+          arcViewer: next.arcViewer,
+          lives,
+          __v: 1,
+        };
+        savePrefs(persistedSubset);
+      }
+      return next;
+    });
   };
 
+  // Guardar cuando cambien las vidas
+  useEffect(() => {
+    if (!didHydrate.current) return;
+    const raw = loadPrefs() || {};
+    savePrefs({ ...raw, lives });
+  }, [lives]);
+
+  // ---- handlers de players ----
   const handleAddPlayer = () => {
     updateMainProps({ players: [...mainProps.players, ""] });
   };
@@ -42,38 +117,64 @@ export default function Home() {
 
   const handleChange = (index, player) => {
     const newPlayers = [...mainProps.players];
-    newPlayers[index] = player;
+    newPlayers[index] = player; // string u objeto { id, name, avatar }
     updateMainProps({ players: newPlayers });
   };
 
+  // ---- fetching de canciones con rate-limit friendly ----
   async function fetchPlayersSongs() {
-    let playersSongs = [];
+    const ITEMS_PER_PAGE = 8; // tu comentario indicaba 8
+    const CONCURRENCY = 2; // 2 jugadores en paralelo suele ser seguro
+    const totalPages = Math.ceil(mainProps.scores / ITEMS_PER_PAGE);
 
-    for (const [index, player] of mainProps.players.entries()) {
-      try {
-        const res = await axios.get(
-          `/api/player-scores?id=${player.id}&count=${mainProps.scores}`
-        );
+    const players = (mainProps.players || []).filter(Boolean);
 
-        const data = res.data.data;
+    const perPlayer = async (player) => {
+      if (!player) return null;
 
-        playersSongs.push({
-          id: player.id,
-          avatar: player.avatar,
-          name: player.name,
-          songs: data,
-        });
-      } catch (error) {
-        console.log(error);
-        setErrorId(index);
-        setLoading(false);
-        return;
+      const pages = [];
+      for (let page = 1; page <= totalPages; page++) {
+        const url = `/api/player-scores?id=${player.id}&count=${ITEMS_PER_PAGE}&page=${page}`;
+        const data = await fetchWithRetry(url); // { data: [...] } esperado
+        const chunk = Array.isArray(data?.data) ? data.data : [];
+        if (!chunk.length) break; // si la página viene vacía, cortar
+        pages.push(...chunk);
+
+        // pequeña pausa opcional para suavizar rate-limit
+        await new Promise((r) => setTimeout(r, 80));
       }
-    }
 
-    return playersSongs;
+      // de-dupe por id / hash si existen
+      const seen = new Set();
+      const songs = pages.filter((s) => {
+        const key = s?.id || s?.song?.id || s?.song?.hash || JSON.stringify(s);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      return {
+        id: player.id,
+        avatar: player.avatar,
+        name: player.name,
+        songs,
+      };
+    };
+
+    try {
+      const playersSongs = await limitConcurrency(
+        players,
+        CONCURRENCY,
+        perPlayer
+      );
+      return playersSongs.filter(Boolean);
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
   }
 
+  // ---- modos de juego ----
   async function normalMode(e) {
     updateMainProps({ loading: true, errorId: null });
 
@@ -85,7 +186,7 @@ export default function Home() {
 
     for (let i = 0; i < quantity; i++) {
       const randomPlayer =
-        playersSongs[Math.floor(Math.random() * mainProps.players.length)];
+        playersSongs[Math.floor(Math.random() * playersSongs.length)];
 
       const randomSong =
         randomPlayer.songs[
@@ -120,6 +221,7 @@ export default function Home() {
     mainProps.endless ? endlessMode() : normalMode(e);
   }
 
+  // ---- render ----
   return (
     <main className="flex flex-col justify-center items-center h-screen w-screen">
       <Head>
@@ -129,6 +231,7 @@ export default function Home() {
           content="A game where you have to guess the player based on their scores"
         />
       </Head>
+
       {!mainProps.playing ? (
         <MainPage
           handleAddPlayer={handleAddPlayer}
@@ -171,6 +274,7 @@ export default function Home() {
           setPlaying={(playing) => updateMainProps({ playing })}
         />
       )}
+
       {mainProps.loading && <LoadingComponent />}
     </main>
   );
